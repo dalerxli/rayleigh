@@ -31,6 +31,26 @@ def ellipsoid_polz(diel, a, b, c):
 
     return alph_a, alph_b, alph_c
 
+# oblate spheroid (a=b>c) polarizabilities
+def oblate_polz(diel, a, c):
+    f = np.sqrt((a/c)**2.-1.)
+    lc = (1.+f**2.)/f**2.*(1.-np.arctan(f)/f)
+    la = (1.-lc)/2.
+    alph_a = 4./3.*np.pi*a**2.*c*(diel-1.)/(1.+la*(diel-1.))
+    alph_c = 4./3.*np.pi*a**2.*c*(diel-1.)/(1.+lc*(diel-1.))
+
+    return alph_a, alph_a, alph_c
+
+# prolate spheroid (a>b=c) polarizabilities
+def prolate_polz(diel, a, b):
+    ec = np.sqrt(1.-(b/a)**2.)
+    la = (1.-ec**2.)/ec**2.*(1./(2.*ec)*np.log((1.+ec)/(1.-ec))-1.)
+    lb = (1.-la)/2.
+    alph_a = 4./3.*np.pi*b**2.*a*(diel-1.)/(1.+la*(diel-1.))
+    alph_b = 4./3.*np.pi*b**2.*a*(diel-1.)/(1.+lb*(diel-1.))
+
+    return alph_a, alph_b, alph_b
+
 # point spin orientation
 def point_spin(phi_p, theta_p, phi_s, alpha_a, alpha_b, alpha_c):
     # create point rotation matrix
