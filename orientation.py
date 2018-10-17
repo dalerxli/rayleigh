@@ -22,6 +22,26 @@ def j_n(n, a, b):
     jval = beta(a+float(n)/2.,b)/beta(a,b)
     return jval
 
+# fixed-angle (delta distribution) moments
+def angmom_fixed(theta, phi):
+    ct = np.cos(theta)
+    cp = np.cos(phi)
+    st = np.sin(theta)
+    s2t = np.sin(2.*theta)
+    sp = np.sin(phi)
+
+    a1 = ct**2.
+    a2 = st**2.*sp**2.
+    a3 = ct**4.
+    a4 = st**4.*sp**4.
+    a5 = sp**2.*st**2.*ct**2.
+    a6 = sp*s2t
+    a7 = sp*ct**2.*s2t
+    a8 = sp**3.*st**2.*s2t
+    
+    angmom = [a1, a2, a3, a4, a5, a6, a7, a8]
+    return angmom
+
 # calculate angular moments for a beta distribution
 def angmom_beta(a, b):
     i1 = i_n(1,a,b)
@@ -103,14 +123,14 @@ def avg_polcov(angmom, alpha_a, alpha_c):
     avar_vv = np.abs(alpha_a)**2.-2.*np.real(j2)*a1+j1*a3
     avar_hv = j1*a5
     acov_hh_vv = np.abs(alpha_a)**2.+j1*a5-j2*a1-np.conj(j2)*a2
-    acov_hh_hv = 0.5*(j1*a8-j2*a1-np.conj(j2)*a6)
-    acov_vv_hv = 0.5*(j1*a7-j2*a1-np.conj(j2)*a6)
+    acov_hh_hv = 0.5*(j1*a8-np.conj(j2)*a6)
+    acov_vv_hv = 0.5*(j1*a7-np.conj(j2)*a6)
     adp = np.real(alpha_a-alpha_c)*(a1-a2)
 
     return [avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, acov_vv_hv, adp]
 
 # calculate radar variables from covariances
-def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, adp):
+def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, adp):
     zhh = 4.*wavl**4./(np.pi**4.*0.93)*avar_hh
     zvv = 4.*wavl**4./(np.pi**4.*0.93)*avar_vv
     zhv = 4.*wavl**4./(np.pi**4.*0.93)*avar_hv
@@ -119,5 +139,6 @@ def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, adp):
     ldr = 10.*np.log10(zhv/zhh)
     kdp = 180.*1.e-3/wavl*adp
     rhohv = np.abs(acov_hh_vv/np.sqrt(avar_hh*avar_vv))
+    rhoxh = np.abs(acov_hh_hv/np.sqrt(avar_hh*avar_hv))
 
-    return zdr, ldr, kdp, rhohv, 10.*np.log10(zhh)
+    return zdr, ldr, kdp, rhohv, 10.*np.log10(zhh), rhoxh
