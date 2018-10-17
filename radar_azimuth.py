@@ -22,7 +22,7 @@ alpha_c, alpha_a, alpha_a = sp.prolate_polz(eps_ice, dmax/2., thick/2.)
 print alpha_c, alpha_a
 
 # set orientation distribution
-amp = 511
+amp = 93
 mod = 0.1
 a = (amp-2)*mod+1
 b = amp*(1-mod)+2*mod-1
@@ -40,7 +40,8 @@ avar_hv = alpha_cov[2]
 acov_hh_vv = alpha_cov[3]
 adp = alpha_cov[6]
 zdr, ldr, kdp, rhohv, zh = ort.radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, adp)
-print zdr, ldr, kdp, rhohv, zh
+#print zdr, ldr, kdp, rhohv, zh
+print avar_hh/avar_vv
 
 # plot radar variables
 plt.plot(phi*180./np.pi, zdr, 'r-', lw=3.)
