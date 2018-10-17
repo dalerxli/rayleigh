@@ -22,8 +22,8 @@ alpha_c, alpha_a, alpha_a = sp.prolate_polz(eps_ice, dmax/2., thick/2.)
 print alpha_c, alpha_a
 
 # set orientation distribution
-amp = 51
-ang_mode = 0.3
+amp = 11
+ang_mode = np.pi*0.25
 mod = (1.-np.cos(ang_mode))/2.
 print mod
 #mod = 0.2
@@ -31,8 +31,8 @@ a = (amp-2)*mod+1
 b = amp*(1-mod)+2*mod-1
 nphi = 201
 phi = np.linspace(0., 2.*np.pi, nphi)
-#angmom = ort.angmom_fixed(ang_mode, phi)
-angmom = ort.angmom_beta_phi(a, b, phi)
+angmom = ort.angmom_fixed(ang_mode, phi)
+#angmom = ort.angmom_beta_phi(a, b, phi)
 
 #print angmom
 
