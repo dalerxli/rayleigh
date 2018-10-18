@@ -132,9 +132,9 @@ def cov_sim(acov_arr, psi_dp):
     acov_vv_hv = acov_arr[5]
     adp = acov_arr[6]
 
-    svar_h = avar_hh+avar_hv+2*np.real(acov_hh_hv*np.exp(-1j*psi_dp))
-    svar_v = avar_vv+avar_hv+2*np.real(acov_vv_hv*np.exp(1j*psi_dp))
-    scov_hv = acov_hh_hv+acov_hh_vv*np.exp(-1j*psi_dp)+avar_hv*np.exp(1j*psi_dp)+np.conj(acov_vv_hv)
+    svar_h = avar_hh+avar_hv+2*np.real(acov_hh_hv*np.exp(1j*psi_dp))
+    svar_v = avar_vv+avar_hv+2*np.real(acov_vv_hv*np.exp(-1j*psi_dp))
+    scov_hv = acov_hh_hv+acov_hh_vv*np.exp(1j*psi_dp)+avar_hv*np.exp(-1j*psi_dp)+np.conj(acov_vv_hv)
 
     return [svar_h, svar_v, scov_hv]
 
