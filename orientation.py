@@ -10,7 +10,6 @@ def beta_dist(x, a, b):
 # gaussian distribution
 def gauss_dist(x, sig_deg):
     f = 2./(sig_deg*np.sqrt(2.*np.pi))*np.exp(-x**2./(2.*sig_deg**2.))
-    return f
 
 # integral function for beta distribution
 def i_n(n, a, b):
@@ -19,7 +18,7 @@ def i_n(n, a, b):
 
 # half-integer function for beta distribution
 def j_n(n, a, b):
-    jval = beta(a+float(n)/2.,b)/beta(a,b)
+    jval = beta(a+float(n)/2.,b+0.5)/beta(a,b)
     return jval
 
 # fixed-angle (delta distribution) moments
@@ -76,15 +75,9 @@ def angmom_beta_phi(a, b, phi):
     j3 = j_n(3,a,b)
     j5 = j_n(5,a,b)
     j7 = j_n(7,a,b)
-    j9 = j_n(9,a,b)
-    j11 = j_n(11,a,b)
-    j13 = j_n(13,a,b)
-    j15 = j_n(15,a,b)
-    j17 = j_n(17,a,b)
-    j19 = j_n(19,a,b)
 
-    a6 = np.sin(phi)*(4*j1-8*j3-2*j5+4*j7-j9/2.+j11-j13/4.+j15/2.)
-    a26 = 4*(4*j3-12*j5+6*j7+6*j9-9./2.*j11+3./2.*j13-5./4.*j15+3./4.*j17+j19/2.)
+    a6 = 4.*np.sin(phi)*(j1-2*j3)
+    a26 = 16*(j3-3*j5+2*j7)
     a7 = a6-np.sin(phi)*a26
     a8 = np.sin(phi)**3.*a26
 
@@ -129,8 +122,24 @@ def avg_polcov(angmom, alpha_a, alpha_c):
 
     return [avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, acov_vv_hv, adp]
 
-# calculate radar variables from covariances
-def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, adp):
+# covariance matrix for simulataneous tr
+def cov_sim(acov_arr, psi_dp):
+    avar_hh = acov_arr[0]
+    avar_vv = acov_arr[1]
+    avar_hv = acov_arr[2]
+    acov_hh_vv = acov_arr[3]
+    acov_hh_hv = acov_arr[4]
+    acov_vv_hv = acov_arr[5]
+    adp = acov_arr[6]
+
+    svar_h = avar_hh+avar_hv+2*np.real(acov_hh_hv*np.exp(-1j*psi_dp))
+    svar_v = avar_vv+avar_hv+2*np.real(acov_vv_hv*np.exp(1j*psi_dp))
+    scov_hv = acov_hh_hv+acov_hh_vv*np.exp(-1j*psi_dp)+avar_hv*np.exp(1j*psi_dp)+np.conj(acov_vv_hv)
+
+    return [svar_h, svar_v, scov_hv]
+
+# calculate radar variables
+def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, acov_vv_hv, adp):
     zhh = 4.*wavl**4./(np.pi**4.*0.93)*avar_hh
     zvv = 4.*wavl**4./(np.pi**4.*0.93)*avar_vv
     zhv = 4.*wavl**4./(np.pi**4.*0.93)*avar_hv
@@ -140,5 +149,6 @@ def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, adp):
     kdp = 180.*1.e-3/wavl*adp
     rhohv = np.abs(acov_hh_vv/np.sqrt(avar_hh*avar_vv))
     rhoxh = np.abs(acov_hh_hv/np.sqrt(avar_hh*avar_hv))
+    rhoxv = np.abs(acov_vv_hv/np.sqrt(avar_vv*avar_hv))
 
     return zdr, ldr, kdp, rhohv, 10.*np.log10(zhh), rhoxh
