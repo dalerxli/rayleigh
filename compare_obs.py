@@ -40,7 +40,7 @@ vel_ob = np.ma.masked_where(rhohv_ob<0.7, vel_ob)
 
 # set particle and radar properties
 wavl = 100.
-eps_ice = complex(6., 1.2)
+eps_ice = complex(7., 1.)
 dmax = 0.2
 thick = 0.05
 
@@ -50,7 +50,7 @@ alpha_c, alpha_a, alpha_a = sp.prolate_polz(eps_ice, dmax/2., thick/2.)
 print alpha_c, alpha_a
 
 # set orientation distribution
-amp = 51
+amp = 11
 ang_mode = np.pi*0.6
 mod = (1.-np.cos(ang_mode))/2.
 a = (amp-2)*mod+1
@@ -71,13 +71,13 @@ acov_vv_hv = alpha_cov[5]
 adp = alpha_cov[6]
 
 # simultaneous tr
-psi_dp = 70.*np.pi/180.
+psi_dp = -70.*np.pi/180.
 svar_h, svar_v, scov_hv = ort.cov_sim(alpha_cov, psi_dp)
 zdr, ldr, kdp, rhohv, zh, rhoxh = ort.radar(wavl, svar_h, svar_v,
                                                 avar_hv, scov_hv, acov_hh_hv,
                                                 acov_vv_hv, adp)
 phi_dp = 180./np.pi*np.angle(scov_hv)
-zh = zh-8.
+zh = zh-1.
 
 # plot distribution
 plt.figure(0)
@@ -85,7 +85,7 @@ v = np.linspace(0., 1., 1000)
 theta = np.arccos(1.-2.*v)
 beta = ort.beta_dist(v, a, b)
 
-plt.plot(theta*180./np.pi, beta, 'b-', lw=3.)
+plt.plot(theta*180./np.pi, beta, 'b-', lw=1.)
 ax = plt.gca()
 #ax.set_ylim([0., 1.])
 ax.set_xlim([0., 180.])
