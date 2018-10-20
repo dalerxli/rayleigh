@@ -40,17 +40,18 @@ vel_ob = np.ma.masked_where(rhohv_ob<0.7, vel_ob)
 
 # set particle and radar properties
 wavl = 100.
-eps_ice = complex(7., 1.)
-dmax = 0.2
-thick = 0.05
+eps_ice = complex(18., 8.)
+dmax = 0.1
+thick = 0.005
 
 # calculate polarizabilities
 #alpha_a, alpha_a, alpha_c = sp.oblate_polz(eps_ice, dmax/2., thick/2.)
 alpha_c, alpha_a, alpha_a = sp.prolate_polz(eps_ice, dmax/2., thick/2.)
-print alpha_c, alpha_a
+#alpha_a, alpha_b, alpha_c = sp.ellipsoid_polz(eps_ice, dmax/2., dmax/2.*0.1, thick/2.)
+print alpha_a, alpha_c
 
 # set orientation distribution
-amp = 11
+amp = 6
 ang_mode = np.pi*0.6
 mod = (1.-np.cos(ang_mode))/2.
 a = (amp-2)*mod+1
@@ -71,12 +72,12 @@ acov_vv_hv = alpha_cov[5]
 adp = alpha_cov[6]
 
 # simultaneous tr
-psi_dp = -70.*np.pi/180.
+psi_dp = -73.*np.pi/180.
 svar_h, svar_v, scov_hv = ort.cov_sim(alpha_cov, psi_dp)
 zdr, ldr, kdp, rhohv, zh, rhoxh = ort.radar(wavl, svar_h, svar_v,
                                                 avar_hv, scov_hv, acov_hh_hv,
                                                 acov_vv_hv, adp)
-phi_dp = 180./np.pi*np.angle(scov_hv)
+phi_dp = 180./np.pi*np.arctan2(np.imag(scov_hv), np.real(scov_hv))
 zh = zh-1.
 
 # plot distribution
@@ -94,26 +95,26 @@ plt.savefig('dist.png')
 # plot radar variables
 fig = plt.figure(1)
 ax = fig.add_subplot(2,2,1)
-plt.plot(phi*180./np.pi, zdr, 'r-', lw=3.)
-plt.plot(azi_ob, zdr_ob, 'b-', lw=3.)
+plt.plot(phi*180./np.pi, zdr, 'r-', lw=2.)
+plt.plot(azi_ob, zdr_ob, 'b-', lw=1.)
 #ax.set_ylim([0., 1.])
 ax.set_xlim([0., 360.])
 
 ax = fig.add_subplot(2,2,2)
-plt.plot(phi*180./np.pi, phi_dp, 'r-', lw=3.)
-plt.plot(azi_ob, phidp_ob, 'b-', lw=3.)
+plt.plot(phi*180./np.pi, phi_dp, 'r-', lw=2.)
+plt.plot(azi_ob, phidp_ob, 'b-', lw=1.)
 #ax.set_ylim([-180., 0.])
 ax.set_xlim([0., 360.])
 
 ax = fig.add_subplot(2,2,3)
-plt.plot(phi*180./np.pi, rhohv, 'r-', lw=3.)
-plt.plot(azi_ob, rhohv_ob, 'b-', lw=3.)
-ax.set_ylim([0., 1.1])
+plt.plot(phi*180./np.pi, rhohv, 'r-', lw=2.)
+plt.plot(azi_ob, rhohv_ob, 'b-', lw=1.)
+ax.set_ylim([0.5, 1.1])
 ax.set_xlim([0., 360.])
 
 ax = fig.add_subplot(2,2,4)
-plt.plot(phi*180./np.pi, zh, 'r-', lw=3.)
-plt.plot(azi_ob, zh_ob, 'b-', lw=3.)
+plt.plot(phi*180./np.pi, zh, 'r-', lw=2.)
+plt.plot(azi_ob, zh_ob, 'b-', lw=1.)
 #ax.set_ylim([0., 1.1])
 ax.set_xlim([0., 360.])
 

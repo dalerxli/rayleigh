@@ -51,6 +51,31 @@ def prolate_polz(diel, a, b):
 
     return alph_a, alph_b, alph_b
 
+# anisotropic oblate spheroid (a=b>c) polarizabilities
+def ani_oblate_polz(diel_a, diel_c, a, c):
+    f = np.sqrt((a/c)**2.-1.)
+    lc = (1.+f**2.)/f**2.*(1.-np.arctan(f)/f)
+    la = (1.-lc)/2.
+    alph_a = 4./3.*np.pi*a**2.*c*(diel_a-1.)/(1.+la*(diel_a-1.))
+    alph_c = 4./3.*np.pi*a**2.*c*(diel_c-1.)/(1.+lc*(diel_c-1.))
+
+    return alph_a, alph_a, alph_c
+
+# spheroid inclusions with beta orientation dist
+def eps_spheroid_beta(eps_inc, vfrac, angmom, a, c):
+    ma = angmom[0]
+    mc = angmom[1]
+    f = np.sqrt((a/c)**2.-1.)
+    lc = (1.+f**2.)/f**2.*(1.-np.arctan(f)/f)
+    la = (1.-lc)/2.
+    lam_a = 1./(1.+la*(eps_inc-1.))
+    lam_c = 1./(1.+lc*(eps_inc-1.))
+
+    # calculate effective dielectric tensor
+    eps_a = (1.-vfrac+vfrac*eps_inc*(lam_a+ma*(lam_a-lam_c)))/(1.-vfrac+vfrac*(lam_a+ma*(lam_a-lam_c)))
+    eps_c = (1.-vfrac+vfrac*eps_inc*(lam_c+mc*(lam_a-lam_c)))/(1.-vfrac+vfrac*(lam_c+mc*(lam_a-lam_c)))
+    return eps_a, eps_c
+
 # point spin orientation
 def point_spin(phi_p, theta_p, phi_s, alpha_a, alpha_b, alpha_c):
     # create point rotation matrix

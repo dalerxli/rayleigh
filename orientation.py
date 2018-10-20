@@ -53,7 +53,10 @@ def angmom_beta(a, b):
     a3 = 8*(2*i4-4*i3+3*i2-i1)+1.
     a4 = 6*(i4-2*i3+i2)
     a5 = 2*(-4*i4+8*i3-5*i2+i1)
-    angmom = [a1, a2, a3, a4, a5]
+    a6 = 0.
+    a7 = 0.
+    a8 = 0.
+    angmom = [a1, a2, a3, a4, a5, a6, a7, a8]
     return angmom
 
 # angular moments for beta distribution in theta, fixed phi
@@ -82,6 +85,16 @@ def angmom_beta_phi(a, b, phi):
     a8 = np.sin(phi)**3.*a26
 
     angmom = [a1, a2, a3, a4, a5, a6, a7, a8]
+    return angmom
+
+# calculate angular moments for beta distribution inclusions
+def angmom_beta_inc(a, b):
+    i1 = i_n(1,a,b)
+    i2 = i_n(2,a,b)
+
+    my = 2*(i2-i1)
+    mz = 4*(i1-i2)
+    angmom = [my, mz]
     return angmom
 
 def angmom_gauss(sig_deg):
@@ -132,14 +145,22 @@ def cov_sim(acov_arr, psi_dp):
     acov_vv_hv = acov_arr[5]
     adp = acov_arr[6]
 
-    svar_h = avar_hh+avar_hv+2*np.real(acov_hh_hv*np.exp(1j*psi_dp))
-    svar_v = avar_vv+avar_hv+2*np.real(acov_vv_hv*np.exp(-1j*psi_dp))
-    scov_hv = acov_hh_hv+acov_hh_vv*np.exp(1j*psi_dp)+avar_hv*np.exp(-1j*psi_dp)+np.conj(acov_vv_hv)
+    svar_h = avar_hh+avar_hv+2*np.real(acov_hh_hv*np.exp(-1j*psi_dp))
+    svar_v = avar_vv+avar_hv+2*np.real(acov_vv_hv*np.exp(1j*psi_dp))
+    scov_hv = acov_hh_hv+acov_hh_vv*np.exp(-1j*psi_dp)+avar_hv*np.exp(1j*psi_dp)+np.conj(acov_vv_hv)
 
     return [svar_h, svar_v, scov_hv]
 
 # calculate radar variables
-def radar(wavl, avar_hh, avar_vv, avar_hv, acov_hh_vv, acov_hh_hv, acov_vv_hv, adp):
+def radar(wavl, acov_arr):
+    avar_hh = acov_arr[0]
+    avar_vv = acov_arr[1]
+    avar_hv = acov_arr[2]
+    acov_hh_vv = acov_arr[3]
+    acov_hh_hv = acov_arr[4]
+    acov_vv_hv = acov_arr[5]
+    adp = acov_arr[6]
+
     zhh = 4.*wavl**4./(np.pi**4.*0.93)*avar_hh
     zvv = 4.*wavl**4./(np.pi**4.*0.93)*avar_vv
     zhv = 4.*wavl**4./(np.pi**4.*0.93)*avar_hv
