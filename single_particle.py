@@ -65,8 +65,13 @@ def ani_oblate_polz(diel_a, diel_c, a, c):
 def eps_spheroid_beta(eps_inc, vfrac, angmom, a, c):
     ma = angmom[0]
     mc = angmom[1]
-    f = np.sqrt((a/c)**2.-1.)
-    lc = (1.+f**2.)/f**2.*(1.-np.arctan(f)/f)
+    if a>c:
+        f = np.sqrt((a/c)**2.-1.)
+        lc = (1.+f**2.)/f**2.*(1.-np.arctan(f)/f)
+    else:
+        ec = np.sqrt(1.-(a/c)**2.)
+        lc = (1.-ec**2.)/ec**2.*(1./(2.*ec)*np.log((1.+ec)/(1.-ec))-1.)
+
     la = (1.-lc)/2.
     lam_a = 1./(1.+la*(eps_inc-1.))
     lam_c = 1./(1.+lc*(eps_inc-1.))
